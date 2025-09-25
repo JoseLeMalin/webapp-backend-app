@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Asp.Versioning.Builder;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
@@ -11,7 +13,7 @@ builder.Services.AddOpenApiDocument(config =>
     config.Title = "TodoAPI v1";
     config.Version = "v1";
 });
-
+var withApiVersioning = builder.Services.AddApiVersioning();
 var port = Environment.GetEnvironmentVariable("PORT") ?? "3000";
 
 var app = builder.Build();
@@ -28,6 +30,31 @@ if (app.Environment.IsDevelopment())
         config.DocExpansion = "list";
     });
 }
+
+// Exception handler
+app.UseExceptionHandler(exceptionHandlerApp =>
+{
+    exceptionHandlerApp.Run(async httpContext =>
+    {
+        var pds = httpContext.RequestServices.GetService<IProblemDetailsService>();
+        if (pds == null
+            || !await pds.TryWriteAsync(new() { HttpContext = httpContext }))
+        {
+            // Fallback behavior
+            await httpContext.Response.WriteAsync("Fallback: An error occurred.");
+        }
+    });
+});
+app.UseStatusCodePages(async statusCodeContext => await Results
+                                                        .Problem(statusCode: statusCodeContext.HttpContext.Response.StatusCode)
+                                                        .ExecuteAsync(statusCodeContext.HttpContext));
+
+RouteGroupBuilder exception = app.MapGroup("/exception");
+exception.MapGet("/", () =>
+{
+    throw new InvalidOperationException("Sample Exception");
+});
+
 
 RouteGroupBuilder todoItems = app.MapGroup("/todoitems");
 

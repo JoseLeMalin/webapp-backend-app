@@ -4,12 +4,25 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <ApiVersioningVersion>8.1.0</ApiVersioningVersion>
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Version together with Asp.Versioning -->
+    <PackageReference Include="Asp.Versioning.Mvc" Version="$(ApiVersioningVersion)" />
+    <PackageVersion Include="Asp.Versioning.Http" Version="$(ApiVersioningVersion)" />
+    <PackageVersion Include="Asp.Versioning.Http.Client" Version="$(ApiVersioningVersion)" />
+    <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="$(ApiVersioningVersion)" />
+
+    
+    <!-- Version together Microsoft core packages-->
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.9" />
+
+    
+    <!-- Misc -->
     <PackageReference Include="NSwag.AspNetCore" Version="14.6.0" />
+    <PackageReference Include="Problem.Details" Version="1.1.0" />
   </ItemGroup>
 
 </Project>
