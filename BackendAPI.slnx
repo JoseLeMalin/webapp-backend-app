@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/BackendAPI.ApiService/BackendAPI.ApiService.csproj" />
+    <Project Path="src/BackendAPI.AppHost/BackendAPI.AppHost.csproj" />
+    <Project Path="src/BackendAPI.ServiceDefaults/BackendAPI.ServiceDefaults.csproj" />
+    <Project Path="src/User.API/User.API.csproj" />
+  </Folder>
+</Solution>
