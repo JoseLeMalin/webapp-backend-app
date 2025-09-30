@@ -2,5 +2,8 @@
     "editor.defaultFormatter": "ms-dotnettools.csdevkit",
     "[csharp]": {
         "editor.defaultFormatter": "ms-dotnettools.csharp"
+    },
+    "[dockercompose]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     }
 }

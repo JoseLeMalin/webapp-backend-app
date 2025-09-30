@@ -1,6 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Asp.Versioning.Builder;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
+
+
+using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
+ILogger logger = factory.CreateLogger("Program");
+logger.LogInformation("Hello World! Logging is {Description}.", "fun");
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
@@ -14,7 +20,7 @@ builder.Services.AddOpenApiDocument(config =>
     config.Version = "v1";
 });
 var withApiVersioning = builder.Services.AddApiVersioning();
-var port = Environment.GetEnvironmentVariable("PORT") ?? "3000";
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5195";
 
 var app = builder.Build();
 
@@ -65,8 +71,8 @@ todoItems.MapPost("/", CreateTodo);
 todoItems.MapPut("/{id}", UpdateTodo);
 todoItems.MapDelete("/{id}", DeleteTodo);
 
-// app.Run();
-app.Run($"http://localhost:{port}");
+app.Run();
+// app.Run($"http://0.0.0.0:{port}");
 
 static async Task<IResult> GetAllTodos(TodoDb db)
 {
@@ -80,6 +86,7 @@ static async Task<IResult> GetCompleteTodos(TodoDb db)
 
 static async Task<IResult> GetTodo(int id, TodoDb db)
 {
+    System.Diagnostics.Debug.WriteLine("In the getter");
     return await db.Todos.FindAsync(id)
         is Todo todo
             ? TypedResults.Ok(new TodoItemDTO(todo))

@@ -1,0 +1,37 @@
+# https://medium.com/@jewelski/quickly-set-up-a-local-postgres-database-using-docker-5098052a4726
+# https://www.docker.com/blog/how-to-use-the-postgres-docker-official-image/#Why-should-you-containerize-Postgres
+# https://github.com/docker/awesome-compose/tree/master/postgresql-pgadmin
+# docker compose -f .docker/compose.yaml up
+# docker compose -f .docker/compose.yaml down
+
+services:
+    backend-api:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: dotnet-backend-api
+        ports:
+            - "5195:5195"
+            - "7062:5195"
+        environment:
+            - DEVELOPMENT=true
+
+    postgres:
+        container_name: webapp-postgres
+        image: postgres:17.6-bookworm@sha256:509f51e522cbfbcbd226c4d7ac48707d4e114261d80c83326127d89ad03436b9
+        restart: unless-stopped
+        environment:
+            - POSTGRES_USER=user
+            - POSTGRES_PASSWORD=user_pwd
+            #- POSTGRES_DB=${POSTGRES_DB} #optional (specify default database instead of $POSTGRES_DB)
+        hostname: localhost
+        ports:
+            - "5432:5432"
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+
+volumes:
+    postgres-data:
+networks:
+    webapp-network:
+        external: true
