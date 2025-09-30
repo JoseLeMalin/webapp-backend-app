@@ -1,9 +1,9 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
 {
-    "service": "webapp-services",
+    "service": "backend-api",
     "dockerComposeFile": "../compose.yaml",
-    "workspaceFolder": "/usr/src/app",
+    "workspaceFolder": "/App",
 
     "shutdownAction": "stopCompose",
 

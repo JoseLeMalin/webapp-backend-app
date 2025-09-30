@@ -2,15 +2,34 @@ using Microsoft.EntityFrameworkCore;
 using Asp.Versioning.Builder;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
-
-
-using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
-ILogger logger = factory.CreateLogger("Program");
-logger.LogInformation("Hello World! Logging is {Description}.", "fun");
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+var connString = "Host=localhost;Username=user;Password=user_pwd;Port=5432;Database=user";
+await using var conn = new NpgsqlConnection(connString);
+await using var dataSource = NpgsqlDataSource.Create(connString);
+await conn.OpenAsync();
+
+await using (var cmd = dataSource.CreateCommand("INSERT INTO data (some_field) VALUES ($1)"))
+{
+    cmd.Parameters.AddWithValue("Hello world");
+    await cmd.ExecuteNonQueryAsync();
+}
+
+// Retrieve all rows
+await using (var cmd = dataSource.CreateCommand("SELECT some_field FROM data"))
+await using (var reader = await cmd.ExecuteReaderAsync())
+{
+    while (await reader.ReadAsync())
+    {
+        Console.WriteLine(reader.GetString(0));
+    }
+}
+
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument(config =>
