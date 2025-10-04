@@ -1,20 +1,28 @@
-using Microsoft.EntityFrameworkCore;
-using Asp.Versioning.Builder;
-using System.Reflection;
+
 using Npgsql;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
-using BackendAPI.User.API.Models;
+using BackendAPI.User.API.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
-builder.Services.AddDbContext<UserContext>(opt => opt.UseInMemoryDatabase("User"));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+//builder.Services.AddDbContext<UserContext>(opt => opt.UseInMemoryDatabase("User"));
+var conString = builder.Configuration.GetConnectionString("ApplicationDbContext") ??
+     throw new InvalidOperationException("Connection string 'ApplicationDbContext' not found.");
 
 var connString = "Host=localhost;Username=user;Password=user_pwd;Port=5432;Database=user";
-await using var conn = new NpgsqlConnection(connString);
-await using var dataSource = NpgsqlDataSource.Create(connString);
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+
+
+await using var conn = new NpgsqlConnection(conString);
+await using var dataSource = NpgsqlDataSource.Create(conString);
 await conn.OpenAsync();
+builder.Services.AddDbContextPool<ApplicationDbContext>(opt =>
+    opt.UseNpgsql(conString)
+        .UseSnakeCaseNamingConvention()
+        .EnableSensitiveDataLogging()
+        .EnableDetailedErrors()
+    );
 
 /* var commandStr= "If not exists (select name from sysobjects where name = 'Customer') CREATE TABLE Customer(First_Name char(50),Last_Name char(50),Address char(50),City char(50),Country char(25),Birth_Date datetime)";
 

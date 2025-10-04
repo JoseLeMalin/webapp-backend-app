@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-
+using Microsoft.EntityFrameworkCore;
+using EFCore.NamingConventions;
 namespace BackendAPI.User.API.Models;
+
 
 public class UserItem : IValidatableObject
 {

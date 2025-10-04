@@ -4,6 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UserSecretsId>bef541dc-83d2-41df-be07-627fb04b4f18</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\BackendAPI.ServiceDefaults\BackendAPI.ServiceDefaults.csproj" />
@@ -35,6 +36,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.9" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
 
     <PackageReference Include="Npgsql" Version="9.0.3" />

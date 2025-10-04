@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BackendAPI.User.API.Models;
+using BackendAPI.User.API.Data;
 
 #region UserController
 namespace BackendAPI.User.API.Controllers
@@ -14,10 +15,10 @@ namespace BackendAPI.User.API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly UserContext _context;
+        private readonly ApplicationDbContext _context;
         #endregion
 
-        public UserController(UserContext context)
+        public UserController(ApplicationDbContext context)
         {
             _context = context;
 
