@@ -3,16 +3,24 @@ using Asp.Versioning.Builder;
 using System.Reflection;
 using Npgsql;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
+using BackendAPI.User.API.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
+//builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
+builder.Services.AddDbContext<UserContext>(opt => opt.UseInMemoryDatabase("User"));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 var connString = "Host=localhost;Username=user;Password=user_pwd;Port=5432;Database=user";
 await using var conn = new NpgsqlConnection(connString);
 await using var dataSource = NpgsqlDataSource.Create(connString);
 await conn.OpenAsync();
+
+/* var commandStr= "If not exists (select name from sysobjects where name = 'Customer') CREATE TABLE Customer(First_Name char(50),Last_Name char(50),Address char(50),City char(50),Country char(25),Birth_Date datetime)";
+
+using (SqlCommand command = new SqlCommand(commandStr, con))
+command.ExecuteNonQuery(); */
+
 
 await using (var cmd = dataSource.CreateCommand("INSERT INTO data (some_field) VALUES ($1)"))
 {
@@ -31,25 +39,37 @@ await using (var reader = await cmd.ExecuteReaderAsync())
 }
 
 
-
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddOpenApiDocument(config =>
+/* builder.Services.AddOpenApiDocument(config =>
 {
     config.DocumentName = "TodoAPI";
     config.Title = "TodoAPI v1";
     config.Version = "v1";
-});
+}); */
 var withApiVersioning = builder.Services.AddApiVersioning();
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5195";
 
 var app = builder.Build();
 
+app.MapControllers(); // Implements in app the listed controllers in ./Controllers
+
+/* app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller}/{action}/{id?}");
+}); */
+/* app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+ */
 if (app.Environment.IsDevelopment())
 {
     app.UseOpenApi(p => p.Path = "/swagger/{documentName}/swagger.yaml"); // https://github.com/RicoSuter/NSwag/wiki/AspNetCore-Middleware#generate-specification-in-yaml-format
     app.UseSwaggerUi(config =>
     {
-        config.DocumentTitle = "TodoAPI";
+        config.DocumentTitle = "User API";
         config.Path = "/swagger";
         // config.DocumentPath = "/swagger/{documentName}/swagger.json";
         config.DocumentPath = "/swagger/{documentName}/swagger.yaml"; // https://github.com/RicoSuter/NSwag/wiki/AspNetCore-Middleware#generate-specification-in-yaml-format
@@ -82,6 +102,8 @@ exception.MapGet("/", () =>
 });
 
 
+
+/*
 RouteGroupBuilder todoItems = app.MapGroup("/todoitems");
 
 todoItems.MapGet("/", GetAllTodos);
@@ -90,12 +112,12 @@ todoItems.MapGet("/{id}", GetTodo);
 todoItems.MapPost("/", CreateTodo);
 todoItems.MapPut("/{id}", UpdateTodo);
 todoItems.MapDelete("/{id}", DeleteTodo);
-
+ */
 app.Run();
 
 
 // app.Run($"http://0.0.0.0:{port}");
-
+/*
 static async Task<IResult> GetAllTodos(TodoDb db)
 {
     return TypedResults.Ok(await db.Todos.Select(x => new TodoItemDTO(x)).ToArrayAsync());
@@ -155,4 +177,4 @@ static async Task<IResult> DeleteTodo(int id, TodoDb db)
     }
 
     return TypedResults.NotFound();
-}
+} */

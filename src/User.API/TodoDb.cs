@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+/* using Microsoft.EntityFrameworkCore;
 
 class TodoDb : DbContext
 {
@@ -6,4 +6,4 @@ class TodoDb : DbContext
         : base(options) { }
 
     public DbSet<Todo> Todos => Set<Todo>();
-}
+} */
