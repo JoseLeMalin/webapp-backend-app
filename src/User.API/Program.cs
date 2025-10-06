@@ -1,33 +1,33 @@
 
-using Npgsql;
+
 using BackendAPI.User.API.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
-//builder.Services.AddDbContext<UserContext>(opt => opt.UseInMemoryDatabase("User"));
-var conString = builder.Configuration.GetConnectionString("ApplicationDbContext") ??
+builder.AddApplicationServices();
+
+var conString =  builder.Configuration["ApplicationDbContext"] ??
      throw new InvalidOperationException("Connection string 'ApplicationDbContext' not found.");
-
-var connString = "Host=localhost;Username=user;Password=user_pwd;Port=5432;Database=user";
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-
 
 await using var conn = new NpgsqlConnection(conString);
 await using var dataSource = NpgsqlDataSource.Create(conString);
+
 await conn.OpenAsync();
-builder.Services.AddDbContextPool<ApplicationDbContext>(opt =>
-    opt.UseNpgsql(conString)
-        .UseSnakeCaseNamingConvention()
-        .EnableSensitiveDataLogging()
-        .EnableDetailedErrors()
-    );
 
-/* var commandStr= "If not exists (select name from sysobjects where name = 'Customer') CREATE TABLE Customer(First_Name char(50),Last_Name char(50),Address char(50),City char(50),Country char(25),Birth_Date datetime)";
+IHostEnvironment env = builder.Environment;
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true);
 
-using (SqlCommand command = new SqlCommand(commandStr, con))
-command.ExecuteNonQuery(); */
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+
+var withApiVersioning = builder.Services.AddApiVersioning();
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5195";
+
+var app = builder.Build();
 
 
 await using (var cmd = dataSource.CreateCommand("INSERT INTO data (some_field) VALUES ($1)"))
@@ -47,31 +47,9 @@ await using (var reader = await cmd.ExecuteReaderAsync())
 }
 
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-/* builder.Services.AddOpenApiDocument(config =>
-{
-    config.DocumentName = "TodoAPI";
-    config.Title = "TodoAPI v1";
-    config.Version = "v1";
-}); */
-var withApiVersioning = builder.Services.AddApiVersioning();
-var port = Environment.GetEnvironmentVariable("PORT") ?? "5195";
-
-var app = builder.Build();
 
 app.MapControllers(); // Implements in app the listed controllers in ./Controllers
 
-/* app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllerRoute(
-        name: "default",
-        pattern: "{controller}/{action}/{id?}");
-}); */
-/* app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
- */
 if (app.Environment.IsDevelopment())
 {
     app.UseOpenApi(p => p.Path = "/swagger/{documentName}/swagger.yaml"); // https://github.com/RicoSuter/NSwag/wiki/AspNetCore-Middleware#generate-specification-in-yaml-format
@@ -110,8 +88,12 @@ exception.MapGet("/", () =>
 });
 
 
+app.Run();
 
+
+// app.Run($"http://0.0.0.0:{port}");
 /*
+
 RouteGroupBuilder todoItems = app.MapGroup("/todoitems");
 
 todoItems.MapGet("/", GetAllTodos);
@@ -120,12 +102,7 @@ todoItems.MapGet("/{id}", GetTodo);
 todoItems.MapPost("/", CreateTodo);
 todoItems.MapPut("/{id}", UpdateTodo);
 todoItems.MapDelete("/{id}", DeleteTodo);
- */
-app.Run();
 
-
-// app.Run($"http://0.0.0.0:{port}");
-/*
 static async Task<IResult> GetAllTodos(TodoDb db)
 {
     return TypedResults.Ok(await db.Todos.Select(x => new TodoItemDTO(x)).ToArrayAsync());
