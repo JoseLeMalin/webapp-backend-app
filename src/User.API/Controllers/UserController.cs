@@ -1,9 +1,9 @@
 ﻿#define Primary
 #if Primary
+using BackendAPI.User.API.Data;
+using BackendAPI.User.API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using BackendAPI.User.API.Models;
-using BackendAPI.User.API.Data;
 
 #region UserController
 namespace BackendAPI.User.API.Controllers

@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddApplicationServices();
 
-var conString =  builder.Configuration["ApplicationDbContext"] ??
+var conString = builder.Configuration["ApplicationDbContext"] ??
      throw new InvalidOperationException("Connection string 'ApplicationDbContext' not found.");
 
 await using var conn = new NpgsqlConnection(conString);

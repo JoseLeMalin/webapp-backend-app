@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
 using EFCore.NamingConventions;
+using Microsoft.EntityFrameworkCore;
 namespace BackendAPI.User.API.Models;
 
 

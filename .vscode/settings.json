@@ -6,5 +6,11 @@
     "[dockercompose]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "dotnet.defaultSolution": "BackendAPI.slnx"
+    "dotnet.defaultSolution": "BackendAPI.slnx",
+    "[xml]": {
+        "editor.defaultFormatter": "redhat.vscode-xml"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    }
 }

@@ -12,6 +12,8 @@ services:
       build: 
         context: .
         dockerfile: Dockerfile
+      environment:
+      - ASPNETCORE_ENVIRONMENT=Development
     # image: mcr.microsoft.com/devcontainers/dotnet:1-8.0
       ports:
           - "5195:5195"
@@ -20,8 +22,15 @@ services:
         - ../..:/workspaces:cached
       # network_mode: service:db
       networks:
-        - webapp-network
+        - webapp-bridge
       command: sleep infinity
+      depends_on:
+        postgres:
+          condition: service_healthy
+      develop:
+        watch:
+          - action: rebuild
+            path: .
 
 
   postgres:
@@ -44,16 +53,27 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - webapp-network
+      - webapp-bridge
     # Do NOT set hostname to localhost — other containers should connect to this service using the service name `postgres` (or the container name)
     # Docker Compose will make the service reachable as "postgres" on the network.
+
+  # collector:
+  #   image: otel/opentelemetry-collector:latest
+  #   volumes:
+  #     - ./collector-config.yaml:/etc/otelcol/config.yaml
+  #   command: ["--config=/etc/otelcol/config.yaml"]
+  #   ports:
+  #     - "4318:4318" # OTLP
+
 
 volumes:
     postgres-data:
 networks:
-    webapp-network: {}
+    webapp-bridge: 
+      driver: bridge
+    
 
-
+# https://docs.docker.com/guides/dotnet/develop/
 # secrets:
 #   pg_secrets:
 #     file: ./pg_secrets.txt

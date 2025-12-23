@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using BackendAPI.User.API.Models;
+﻿using BackendAPI.User.API.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BackendAPI.User.API.Data;
 

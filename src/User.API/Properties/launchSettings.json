@@ -9,8 +9,7 @@
         "Identity__Url": "http://localhost:5223",
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPIRE_ALLOW_UNSECURED_TRANSPORT": "true",
-        "EnvironmentName": "Development",
-
+        "EnvironmentName": "Development"
       }
     }
   }
