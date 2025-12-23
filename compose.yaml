@@ -35,3 +35,7 @@ volumes:
 networks:
     webapp-network:
         external: true
+
+# secrets:
+#   pg_secrets:
+#     file: ./pg_secrets.txt

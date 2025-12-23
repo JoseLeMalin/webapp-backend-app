@@ -1,0 +1,59 @@
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Docker Compose reference guide at
+# https://docs.docker.com/go/compose-spec-reference/
+
+# Here the instructions define your application as a service called "server".
+# This service is built from the Dockerfile in the current directory.
+# You can add other services your application may depend on here, such as a
+# database or a cache. For examples, see the Awesome Compose repository:
+# https://github.com/docker/awesome-compose
+services:
+  server-app:
+      build: 
+        context: .
+        dockerfile: Dockerfile
+    # image: mcr.microsoft.com/devcontainers/dotnet:1-8.0
+      ports:
+          - "5195:5195"
+          - "7062:5195"
+      volumes:
+        - ../..:/workspaces:cached
+      # network_mode: service:db
+      networks:
+        - webapp-network
+      command: sleep infinity
+
+
+  postgres:
+    image: postgres:17.6-bookworm@sha256:509f51e522cbfbcbd226c4d7ac48707d4e114261d80c83326127d89ad03436b9
+    container_name: webapp-postgres-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=user_pwd
+      - POSTGRES_PORT=5432
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      #- POSTGRES_DB=${POSTGRES_DB} #optional (specify default database instead of $POSTGRES_DB)
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"] # https://github.com/peter-evans/docker-compose-healthcheck/issues/16
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - webapp-network
+    # Do NOT set hostname to localhost — other containers should connect to this service using the service name `postgres` (or the container name)
+    # Docker Compose will make the service reachable as "postgres" on the network.
+
+volumes:
+    postgres-data:
+networks:
+    webapp-network: {}
+
+
+# secrets:
+#   pg_secrets:
+#     file: ./pg_secrets.txt
